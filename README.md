@@ -102,10 +102,10 @@ echoerr () {
 # $1 : code de sortie
 usage () {
     cat >&2 <<EOF
-usage: `basename $0` [--help -h] | [--show] argumentsAndOptions
+usage: `basename $0` [--help -h] | [--show|-s] argumentsAndOptions
 
     --help, -h          : prints this help and exits
-    --show              : do not execute pandoc, just show the command to be executed
+    --show, -s          : do not execute pandoc, just show the command to be executed
 
     argumentsAndOptions : arguments and/or options to be handed over to pandoc
 EOF
@@ -116,16 +116,22 @@ EOF
 #
 cmdToExec="docker run -e USER_ID=${UID} -e USER_NAME=${USER} --name=\"pandoc\" --rm=true -v`pwd`:/tmp -w/tmp dgricci/pandoc pandoc"
 while [ $# -gt 0 ]; do
+    # protect back argument containing IFS characters ...
+    arg="$1"
+    [ $(echo -n ";$arg;" | tr "$IFS" "_") != ";$arg;" ] && {
+        arg="\"$arg\""
+    }
     if [ -n "${noMoreOptions}" ] ; then
-        cmdToExec="${cmdToExec} $1"
+        cmdToExec="${cmdToExec} $arg"
     else
-        case $1 in
+        case $arg in
         --help|-h)
             run -1 "${cmdToExec} --help"
             usage 0
             ;;
-        --show)
-            # -s is a pandoc option ... so it is discarded here !
+        --show|-s)
+            # -s is a pandoc option ... we expect -s to be at the beginning of
+            # the positional parameters before options for pandoc !
             show=true
             noMoreOptions=true
             ;;
@@ -136,7 +142,7 @@ while [ $# -gt 0 ]; do
             [ -z "${noMoreOptions}" ] && {
                 noMoreOptions=true
             }
-            cmdToExec="${cmdToExec} $1"
+            cmdToExec="${cmdToExec} $arg"
             ;;
         esac
     fi
