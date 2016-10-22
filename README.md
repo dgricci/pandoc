@@ -3,13 +3,14 @@
 % rév. 0.0.1 du 10/07/2016
 % rév. 0.0.2 du 10/08/2016
 % rév. 0.0.3 du 10/09/2016
+% rév. 0.0.4 du 20/10/2016
 
 ---
 
 # Building #
 
 ```bash
-$ docker build -t dgricci/pandoc:0.0.3 -t dgricci/pandoc:latest .
+$ docker build -t dgricci/pandoc:0.0.4 -t dgricci/pandoc:latest .
 ```
 
 ## Behind a proxy (e.g. 10.0.4.2:3128) ##
@@ -18,7 +19,7 @@ $ docker build -t dgricci/pandoc:0.0.3 -t dgricci/pandoc:latest .
 $ docker build \
     --build-arg http_proxy=http://10.0.4.2:3128/ \
     --build-arg https_proxy=http://10.0.4.2:3128/ \
-    -t dgricci/pandoc:0.0.3 -t dgricci/pandoc:latest .
+    -t dgricci/pandoc:0.0.4 -t dgricci/pandoc:latest .
 ```
 
 ## Build command with arguments default values ##
@@ -26,7 +27,7 @@ $ docker build \
 ```bash
 $ docker build \
     --build-arg PANDOC_VERSION=1.17.2 \
-    -t dgricci/pandoc:0.0.3 -t dgricci/pandoc:latest .
+    -t dgricci/pandoc:0.0.4 -t dgricci/pandoc:latest .
 ```
 
 # Use #
@@ -114,7 +115,7 @@ EOF
 #
 # main
 #
-cmdToExec="docker run -e USER_ID=${UID} -e USER_NAME=${USER} --name=\"pandoc\" --rm=true -v`pwd`:/tmp -w/tmp dgricci/pandoc pandoc"
+cmdToExec="docker run -e USER_ID=${UID} -e USER_NAME=${USER} --name=\"pandoc$$\" --rm=true -v`pwd`:/tmp -w/tmp dgricci/pandoc pandoc"
 while [ $# -gt 0 ]; do
     # protect back argument containing IFS characters ...
     arg="$1"
