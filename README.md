@@ -189,4 +189,5 @@ __Et voilà !__
 
 _fin du document[^pandoc_gen]_
 
-[^pandoc_gen]: document généré via $ `docker run -e USER_ID="`id -u`" --name="pandoc" --rm -v`pwd`:/tmp -w/tmp dgricci/pandoc -V fontsize=10pt -V geometry:"top=2cm, bottom=2cm, left=1cm, right=1cm" -s -N --toc -o pandoc.pdf README.md`{.bash}
+[^pandoc_gen]: document généré via $ `docker run -e USER_ID="`id -u`" --name="pandoc" --rm -v`pwd`:/tmp -w/tmp dgricci/pandoc --latex-engine=xelatex -V fontsize=10pt -V geometry:"top=2cm, bottom=2cm, left=1cm, right=1cm" -s -N --toc -o pandoc.pdf README.md`{.bash}
+
