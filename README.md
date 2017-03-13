@@ -1,16 +1,23 @@
 % Environnement Haskell pour pandoc
 % Didier Richard
-% rév. 0.0.1 du 10/07/2016
-% rév. 0.0.2 du 10/08/2016
-% rév. 0.0.3 du 10/09/2016
-% rév. 0.0.4 du 20/10/2016
+% 13/03/2017
+
+---
+
+revision:
+    - 0.0.1 : 10/07/2016
+    - 0.0.2 : 10/08/2016
+    - 0.0.3 : 10/09/2016
+    - 0.0.4 : 20/10/2016
+    - 0.0.5 : 13/03/2017
 
 ---
 
 # Building #
 
 ```bash
-$ docker build -t dgricci/pandoc:0.0.4 -t dgricci/pandoc:latest .
+$ docker build -t dgricci/pandoc:$(< VERSION) .
+$ docker tag dgricci/pandoc:$(< VERSION) dgricci/pandoc:latest
 ```
 
 ## Behind a proxy (e.g. 10.0.4.2:3128) ##
@@ -19,20 +26,38 @@ $ docker build -t dgricci/pandoc:0.0.4 -t dgricci/pandoc:latest .
 $ docker build \
     --build-arg http_proxy=http://10.0.4.2:3128/ \
     --build-arg https_proxy=http://10.0.4.2:3128/ \
-    -t dgricci/pandoc:0.0.4 -t dgricci/pandoc:latest .
+    -t dgricci/pandoc:$(< VERSION) .
+$ docker tag dgricci/pandoc:$(< VERSION) dgricci/pandoc:latest
 ```
 
 ## Build command with arguments default values ##
 
 ```bash
 $ docker build \
-    --build-arg PANDOC_VERSION=1.17.2 \
-    -t dgricci/pandoc:0.0.4 -t dgricci/pandoc:latest .
+    --build-arg PANDOC_VERSION=1.19.2.1 \
+    -t dgricci/pandoc:$(< VERSION) .
+$ docker tag dgricci/pandoc:$(< VERSION) dgricci/pandoc:latest
 ```
 
 # Use #
 
 See `dgricci/jessie` README for handling permissions with dockers volumes.
+
+```bash
+$ docker run --rm dgricci/pandoc:$(< VERSION)
+pandoc 1.19.2.1
+Compiled with pandoc-types 1.17.0.5, texmath 0.9.3, skylighting 0.1.1.5
+Default user data directory: /home/ricci/.pandoc
+Copyright (C) 2006-2016 John MacFarlane
+Web:  http://pandoc.org
+This is free software; see the source for copying conditions.
+There is no warranty, not even for merchantability or fitness
+for a particular purpose.
+```
+
+## An example ##
+
+See [https://github.com/dgricci/xml-1a](XML training, 1st part) for files.
 
 ```bash
 $ tree .
@@ -116,6 +141,10 @@ EOF
 # main
 #
 cmdToExec="docker run -e USER_ID=${UID} -e USER_NAME=${USER} --name=\"pandoc$$\" --rm=true -v`pwd`:/tmp -w/tmp dgricci/pandoc pandoc"
+[ $# -eq 0 ] && {
+    # add option --version to positional arguments (cause none)
+    set -- "--version"
+}
 while [ $# -gt 0 ]; do
     # protect back argument containing IFS characters ...
     arg="$1"

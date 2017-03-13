@@ -7,13 +7,15 @@ MAINTAINER Didier Richard <didier.richard@ign.fr>
 ## different versions - use argument when defined otherwise use defaults
 # Cf. https://hackage.haskell.org/package/pandoc for pandoc version
 ARG PANDOC_VERSION
-ENV PANDOC_VERSION   ${PANDOC_VERSION:-1.17.2}
+ENV PANDOC_VERSION   ${PANDOC_VERSION:-1.19.2.1}
 
+# install pandoc globally to prevent : error: exec: "/root/.cabal/bin/pandoc": stat /root/.cabal/bin/pandoc: permission denied
 RUN \
     apt-get -qy update && \
     cabal update && \
-    # install pandoc globally to prevent : error: exec: "/root/.cabal/bin/pandoc": stat /root/.cabal/bin/pandoc: permission denied
     cabal install --global \
+        unix \
+        time \
         pandoc-${PANDOC_VERSION} \
         pandoc-include \
     && \
@@ -25,9 +27,10 @@ RUN \
         texlive-fonts-recommended \
         texlive-pictures \
         texlive-pstricks \
+        texlive-xetex \
     && \
     rm -rf /var/lib/apt/lists/*
 
-# default command : launch pandoc's help
-CMD ["pandoc", "--help"]
+# default command : launch pandoc's version
+CMD ["pandoc", "--version"]
 
