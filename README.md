@@ -184,10 +184,21 @@ run 100 "${cmdToExec}"
 exit 0
 ```
 
+# Miscellaneous #
+
+See all [https://github.com/danstoner/pandoc_samples](sample pandoc-generated PDF font examples)
+
+Getting all fonts on your system :
+
+```bash
+$ fc-list --format="%{family}\n" | cut -f1 -d, | sort | uniq
+```
+
+
 __Et voilà !__
 
 
 _fin du document[^pandoc_gen]_
 
-[^pandoc_gen]: document généré via $ `docker run -e USER_ID="`id -u`" --name="pandoc" --rm -v`pwd`:/tmp -w/tmp dgricci/pandoc --latex-engine=xelatex -V fontsize=10pt -V geometry:"top=2cm, bottom=2cm, left=1cm, right=1cm" -s -N --toc -o pandoc.pdf README.md`{.bash}
+[^pandoc_gen]: document généré via $ `docker run -e USER_ID="`id -u`" --name="pandoc" --rm -v`pwd`:/tmp -w/tmp dgricci/pandoc pandoc --latex-engine=xelatex -V mainfont="DejaVu Sans" -V fontsize=10pt -V geometry:"top=2cm, bottom=2cm, left=1cm, right=1cm" -s -N --toc -o pandoc.pdf README.md`{.bash}
 
