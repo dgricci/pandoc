@@ -1,15 +1,16 @@
-% Environnement Haskell pour pandoc
-% Didier Richard
+% Environnement Haskell pour pandoc  
+% Didier Richard  
 % 13/03/2017
 
 ---
 
 revision:
-    - 0.0.1 : 10/07/2016
-    - 0.0.2 : 10/08/2016
-    - 0.0.3 : 10/09/2016
-    - 0.0.4 : 20/10/2016
-    - 0.0.5 : 13/03/2017
+    - 0.0.1 : 10/07/2016  
+    - 0.0.2 : 10/08/2016  
+    - 0.0.3 : 10/09/2016  
+    - 0.0.4 : 20/10/2016  
+    - 0.0.5 : 13/03/2017  
+    - 0.0.6 : 08/04/2018  
 
 ---
 
@@ -34,7 +35,7 @@ $ docker tag dgricci/pandoc:$(< VERSION) dgricci/pandoc:latest
 
 ```bash
 $ docker build \
-    --build-arg PANDOC_VERSION=1.19.2.1 \
+    --build-arg PANDOC_VERSION=2.1.3 \
     -t dgricci/pandoc:$(< VERSION) .
 $ docker tag dgricci/pandoc:$(< VERSION) dgricci/pandoc:latest
 ```
@@ -45,10 +46,10 @@ See `dgricci/jessie` README for handling permissions with dockers volumes.
 
 ```bash
 $ docker run --rm dgricci/pandoc:$(< VERSION)
-pandoc 1.19.2.1
-Compiled with pandoc-types 1.17.0.5, texmath 0.9.3, skylighting 0.1.1.5
-Default user data directory: /home/ricci/.pandoc
-Copyright (C) 2006-2016 John MacFarlane
+pandoc 2.1.3
+Compiled with pandoc-types 1.17.4.2, texmath 0.10.1.1, skylighting 0.7.1
+Default user data directory: /root/.pandoc
+Copyright (C) 2006-2018 John MacFarlane
 Web:  http://pandoc.org
 This is free software; see the source for copying conditions.
 There is no warranty, not even for merchantability or fitness
@@ -81,107 +82,25 @@ $ tree .
 1 directory, 4 files
 ```
 
-# A shell to hide the container's usage #
+## A shell to hide container's usage ##
+
+As a matter of fact, typing the `docker run ...` long command is painfull !  
+In the [bin directory, the pandoc.sh bash shell](bin/pandoc.sh) can be invoked
+to ease the use of such a container. For instance (we suppose that the shell
+script has been copied in a bin directory and is in the user's PATH) :
 
 ```bash
-#!/bin/bash
-#
-# Exécute le container docker dgricci/pandoc
-#
-# Constantes :
-VERSION="1.0.0"
-# Variables globales :
-unset show
-unset noMoreOptions
-#
-# Exécute ou affiche une commande
-# $1 : code de sortie en erreur
-# $2 : commande à exécuter
-run () {
-    local code=$1
-    local cmd=$2
-    if [ -n "${show}" ] ; then
-        echo "cmd: ${cmd}"
-    else
-        eval ${cmd}
-    fi
-    [ ${code} -ge 0 -a $? -ne 0 ] && {
-        echo "Oops #################"
-        exit ${code#-} #absolute value of code
-    }
-    [ ${code} -ge 0 ] && {
-        return 0
-    }
-}
-#
-# Affichage d'erreur
-# $1 : code de sortie
-# $@ : message
-echoerr () {
-    local code=$1
-    shift
-    echo "$@" 1>&2
-    usage ${code}
-}
-#
-# Usage du shell :
-# $1 : code de sortie
-usage () {
-    cat >&2 <<EOF
-usage: `basename $0` [--help -h] | [--show|-s] argumentsAndOptions
-
-    --help, -h          : prints this help and exits
-    --show, -s          : do not execute pandoc, just show the command to be executed
-
-    argumentsAndOptions : arguments and/or options to be handed over to pandoc
-EOF
-    exit $1
-}
-#
-# main
-#
-cmdToExec="docker run -e USER_ID=${UID} -e USER_NAME=${USER} --name=\"pandoc$$\" --rm=true -v`pwd`:/tmp -w/tmp dgricci/pandoc pandoc"
-[ $# -eq 0 ] && {
-    # add option --version to positional arguments (cause none)
-    set -- "--version"
-}
-while [ $# -gt 0 ]; do
-    # protect back argument containing IFS characters ...
-    arg="$1"
-    [ $(echo -n ";$arg;" | tr "$IFS" "_") != ";$arg;" ] && {
-        arg="\"$arg\""
-    }
-    if [ -n "${noMoreOptions}" ] ; then
-        cmdToExec="${cmdToExec} $arg"
-    else
-        case $arg in
-        --help|-h)
-            run -1 "${cmdToExec} --help"
-            usage 0
-            ;;
-        --show|-s)
-            # -s is a pandoc option ... we expect -s to be at the beginning of
-            # the positional parameters before options for pandoc !
-            show=true
-            noMoreOptions=true
-            ;;
-        --)
-            noMoreOptions=true
-            ;;
-        *)
-            [ -z "${noMoreOptions}" ] && {
-                noMoreOptions=true
-            }
-            cmdToExec="${cmdToExec} $arg"
-            ;;
-        esac
-    fi
-    shift
-done
-
-run 100 "${cmdToExec}"
-
-exit 0
+$ cd whatever/bin
+$ ln -s pandoc.sh pandoc
+$ pandoc --version
+pandoc 2.1.3
+Compiled with pandoc-types 1.17.4.2, texmath 0.10.1.1, skylighting 0.7.1
+Default user data directory: /root/.pandoc
+Copyright (C) 2006-2018 John MacFarlane
+Web:  http://pandoc.org
+This is free software; see the source for copying conditions.
+There is no warranty, not even for merchantability or fitness
+for a particular purpose.
 ```
 
 # Miscellaneous #
